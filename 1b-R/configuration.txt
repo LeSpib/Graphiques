@@ -1,0 +1,5 @@
+Pour récupérer une version de R : http://ftp.igh.cnrs.fr/pub/CRAN/bin/windows/base/ . Puis l'installer en évitant le répertoire "Program Files" pour les problèmes de droit lors de l'installation de paquets.
+
+Pour charger ggplot2, passer la commande suivante sous R :
+  install.packages("ggplot2")
+
