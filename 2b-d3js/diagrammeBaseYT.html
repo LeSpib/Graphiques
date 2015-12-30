@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<meta charset="utf-8">
+<style>
+body { font: 12px Arial;}
+.graphe1 rect {
+  fill: steelblue;
+}
+.graphe1 text {
+  fill: white;
+  font: 10px sans-serif;
+  text-anchor: end;
+}
+.graphe2 rect {
+  fill: steelblue;
+}
+.graphe2 text {
+  fill: white;
+  font: 10px sans-serif;
+  text-anchor: end;
+}
+</style>
+<script type="text/javascript" src="d3/d3.js"></script>
+<body>
+<h1>Test de graphique en barre simple</h1>
+<svg class="graphe1"></svg>
+<script>
+// Définition des dimensions générales
+var margin = {top: 30, right: 20, bottom: 30, left: 50},
+width = 600 - margin.left - margin.right,
+height = 270 - margin.top - margin.bottom;
+// Les données. Oui mais non, on veut du CSV
+var data = [4, 8, 15, 16, 23, 42];
+var barHeight = 20;
+var x = d3.scale.linear()
+    .domain([0, d3.max(data)])
+    .range([0, width]);
+var chart = d3.select(".graphe1")
+    .attr("width", width)
+    .attr("height", barHeight * data.length);
+var bar = chart.selectAll("g")
+    .data(data)
+  .enter().append("g")
+    .attr("transform", function(d, i) { return "translate(0," + i * barHeight + ")"; });
+bar.append("rect")
+    .attr("width", x)
+    .attr("height", barHeight - 1);
+bar.append("text")
+    .attr("x", function(d) { return x(d) - 3; })
+    .attr("y", barHeight / 2)
+    .attr("dy", ".35em")
+    .text(function(d) { return d; });
+</script>
+
+<h1>Test de graphique en chargeant un CSV</h1>
+<div class="graphe2"></div>
+<script>
+// Définition des dimensions générales
+var margin = {top: 20, right: 10, bottom: 20, left: 10},
+width = 700 - margin.left - margin.right,
+height = 350 - margin.top - margin.bottom;
+// Les données. Oui mais non, on veut du CSV
+var barHeight = 7;
+// La zone de tracé avec ses marges ("svg" avec le sous-objet "g", sans les marges)
+var svg = d3.select(".graphe2")
+	.append("svg")
+		.attr("width", width + margin.left + margin.right)
+		.attr("height", height + margin.top + margin.bottom)
+	.append("g")
+		.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+var x = d3.scale.linear().range([0, width]);
+var y = d3.scale.linear().range([height,0]);
+// Les données
+var dsv = d3.dsv(";", "text/plain");
+dsv("data/exemple.csv", function(error, data) {
+	data.forEach(function(d) {
+		d.effectif = +d.effectif;
+	});
+	y.domain([d3.max(data, function(d) { return d.effectif; }),0]);
+	var barre = svg.selectAll("g")
+		.data(data)
+		.enter().append("g")
+			.attr("transform", function(d, i) { return "translate(" + i * barHeight + "," + (height - y(d.effectif)) + ")"; })
+		.append("rect")
+			.attr("width", barHeight - 1)
+			.attr("height", function (d) { return y(d.effectif)});
+});
+</script>
+
+</body>
+</html>
